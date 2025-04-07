@@ -1,4 +1,10 @@
-
+try:    
+    import requests,threading,os,sys,socket,getpass,subprocess
+except ImportError:
+    import os
+    os.system("pip install --break-system-packages requests ")
+    import requests,threading,sys,socket,getpass,subprocess
+    
 class script():
     def DOS(target):
         try:
