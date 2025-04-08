@@ -4,10 +4,6 @@ except ImportError:
     import os
     os.system("pip install --break-system-packages requests ")
     import requests,threading,sys,socket,getpass,subprocess
-if os.path.exists(MODULES_PATH):
-    for file in os.listdir(MODULES_PATH):
-        if file.endswith(".py"):
-            MODULES.append((os.path.basename(file),file))
 PATH = f"/home/{getpass.getuser()}/chouquette"
 MODULES_PATH = f"/home/{getpass.getuser()}/chouquette/modules"
 MODULES = []
@@ -15,6 +11,11 @@ if not os.path.exists(PATH):
     os.makedirs(PATH)
 if not os.path.exists(MODULES_PATH):
     os.makedirs(MODULES_PATH)
+if os.path.exists(MODULES_PATH):
+    for file in os.listdir(MODULES_PATH):
+        if file.endswith(".py"):
+            MODULES.append((os.path.basename(file),file))
+
 class script():
     def DOS(target):
         try:
