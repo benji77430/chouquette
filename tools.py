@@ -4,7 +4,11 @@ except ImportError:
     import os
     os.system("pip install --break-system-packages requests ")
     import requests,threading,sys,socket,getpass,subprocess
-    
+if os.path.exists(MODULES_PATH):
+    for file in os.listdir(MODULES_PATH):
+        if file.endswith(".py"):
+            MODULES.append((os.path.basename(file),file))
+
 class script():
     def DOS(target):
         try:
@@ -29,6 +33,33 @@ class script():
         for _ in range(os.cpu_count()*4): threading.Thread(target=send,args=(target,)).start()
 
         print("\n"+f"{Colors.RED}Chouquette >{Colors.END}"+send(target))
+    def download_video(url,output):
+        """Download YouTube videos.
+
+        Args:
+            url (str): YouTube video url.
+            output (str): Download directory.
+
+        Returns:
+            bool: Return True if the video was downloaded and False if get an exception.
+
+        """
+        try:
+            YouTube(url).streams.first().download(output)
+            return True
+        except Exception:
+            return False
+    def get_url(query):
+        results = YoutubeSearch(query, max_results=1).to_dict()
+        for i,result in enumerate(results):
+            url = f"https://youtube.com{result['url_suffix']}"
+            title = result['title']
+            print(f"[{i+1}] - {title}: {url}")
+        choice = input('entrez le numero de la video à télécharger > ')
+        out = script.download_video(int(choice)-1, f"/home/{getpass.getuser()}/Vidéos/{title}.mp4")
+        if out:
+            print('download succesfull')
+        
 
 class Colors:
     """ ANSI color codes """
@@ -58,24 +89,28 @@ class Colors:
     END = "\033[0m"
 os.system('cls' if os.name =="nt" else "clear")
 print(fr'''{Colors.RED}
-  _____ _                                  _   _       
- / ____| |                                | | | |      
+_____ _                                  _   _       
+/ ____| |                                | | | |      
 | |    | |__   ___  _   _  __ _ _   _  ___| |_| |_ ___ 
 | |    | '_ \ / _ \| | | |/ _` | | | |/ _ \ __| __/ _ \
 | |____| | | | (_) | |_| | (_| | |_| |  __/ |_| ||  __/
- \_____|_| |_|\___/ \__,_|\__, |\__,_|\___|\__|\__\___|
-                             | |                       
-                             |_|      
-          
-                   [{Colors.YELLOW}+{Colors.RED}] CREATED BY {Colors.CYAN}NOTRUNIT{Colors.END}  
-                 
+\_____|_| |_|\___/ \__,_|\__, |\__,_|\___|\__|\__\___|
+                            | |                       
+                            |_|      
+        
+                [{Colors.YELLOW}+{Colors.RED}] CREATED BY {Colors.CYAN}NOTRUNIT{Colors.END}  
+                
 ''')
 while True:
     prompt=input(f"{Colors.CYAN}┌──<[{Colors.RED}{getpass.getuser()}@{socket.gethostname()}{Colors.CYAN}]{Colors.END} ~ {Colors.RED}{os.getcwd()}{Colors.END} \n{Colors.CYAN}└──╼ ${Colors.END} ")
     if prompt in ['help',"/?","?"]:
-        print("""
-    DOS (target)
-    JAMMER
+        print(f"""
+    DOS (target)    -> start DOS on target
+    {"JAMMER        -> start wifi jammer" if not os.name=="nt" else ""}
+    list            -> list modules
+    download        -> download video from youtube
+
+
     """)
     elif prompt.lower().startswith("dos"):
         try:
@@ -86,6 +121,10 @@ while True:
         print("comming soon !")
     elif prompt.lower() in ['sh',"bash",'shell','exit']:
         exit()
+    elif prompt.lower() == "list":
+        [print(module for module in MODULES)]
+    elif prompt.lower() == "download":
+        script.get_url()
     else:
         result = subprocess.run(prompt,shell=True,capture_output=True)
         output = result.stderr + result.stdout
